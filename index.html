@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8" />
+    <title>موقع تعلّم عواصم ودول العالم</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: "Cairo", sans-serif;
+            background: #f0f8ff;
+            direction: rtl; /* لجعل النصوص تسير من اليمين لليسار */
+        }
+
+        header {
+            background: #4ca1af; /* لون متدرج جميل */
+            color: #fff;
+            padding: 20px;
+            text-align: center;
+        }
+
+        h1, h2, h3, h4, h5 {
+            margin: 10px 0;
+        }
+
+        main {
+            padding: 20px;
+        }
+
+        /* تنسيق القائمة المنسدلة */
+        #continentSelect {
+            padding: 10px;
+            font-size: 1rem;
+            margin-bottom: 20px;
+            border: 2px solid #ccc;
+            border-radius: 4px;
+        }
+
+        /* تنسيق قائمة الدول */
+        #countryList {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .country-btn {
+            background-color: #fff;
+            border: 2px solid #4ca1af;
+            border-radius: 8px;
+            padding: 10px 15px;
+            cursor: pointer;
+            transition: background-color 0.3s, color 0.3s;
+            min-width: 120px;
+            text-align: center;
+        }
+
+        .country-btn:hover {
+            background-color: #4ca1af;
+            color: #fff;
+        }
+
+        /* صندوق المعلومات المنبثق */
+        #infoBox {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #ffffff;
+            border: 2px solid #4ca1af;
+            border-radius: 10px;
+            padding: 20px;
+            width: 80%;
+            max-width: 500px;
+            z-index: 999;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+        }
+
+        #infoBox h2 {
+            margin-top: 0;
+            color: #4ca1af;
+        }
+
+        #infoBox button {
+            background-color: #4ca1af;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            margin-top: 15px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        #infoBox button:hover {
+            background-color: #357a82;
+        }
+
+        /* إخفاء الصندوق */
+        #infoBox.hidden {
+            display: none;
+        }
+
+        footer {
+            text-align: center;
+            background: #4ca1af;
+            color: #fff;
+            padding: 15px;
+            margin-top: 20px;
+        }
+
+        /* تنسيق إضافي للحقوق والتواصل */
+        .copyright {
+            margin: 5px 0;
+            font-weight: bold;
+        }
+        .contact-us {
+            margin: 5px 0;
+            color: #fff;
+        }
+        .contact-us a {
+            color: #ffd700; /* لون بارز للرابط */
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .contact-us a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>موقع تعلّم عواصم ودول العالم</h1>
+    <p>اضغط على اسم القارة ثم اختر الدولة لتظهر لك عاصمتها ووصف مختصر عنها</p>
+</header>
+
+<main>
+    <label for="continentSelect"><strong>اختر القارة:</strong></label>
+    <select id="continentSelect">
+        <option value="">-- الرجاء الاختيار --</option>
+        <option value="أفريقيا">أفريقيا</option>
+        <option value="آسيا">آسيا</option>
+        <option value="أوروبا">أوروبا</option>
+        <option value="أمريكا الشمالية">أمريكا الشمالية</option>
+        <option value="أمريكا الجنوبية">أمريكا الجنوبية</option>
+        <option value="أوقيانوسيا">أوقيانوسيا</option>
+    </select>
+
+    <div id="countryList"></div>
+</main>
+
+<!-- صندوق المعلومات الذي سيظهر عند اختيار دولة -->
+<div id="infoBox" class="hidden">
+    <h2 id="countryName"></h2>
+    <h3 id="capitalName"></h3>
+    <p id="description"></p>
+    <button id="closeBtn">إغلاق</button>
+</div>
+
+<footer>
+    <!-- حقوق الملكية والبيانات المطلوبة -->
+    <div class="copyright">
+        Copywrite by: Dr.Ayman El-Kady <br/>
+        DR.AI Course
+    </div>
+    <div class="contact-us">
+        إنضم إلينا لتتعلم إنشاء مواقع تعليمية وتفاعلية 
+        وتواصل معنا واتس على الرابط التالي: 
+        <a href="https://wa.me/201040335071" target="_blank">اضغط هنا</a>
+    </div>
+</footer>
+
+<script>
+    /* 
+        مصفوفة تحتوي على جميع القارات والدول مع عواصمها ووصفها.
+        كل عنصر كائن يتكون من:
+        continent: اسم القارة
+        country: اسم الدولة
+        capital: اسم العاصمة
+        description: وصف مختصر
+    */
+
+    const countriesData = [
+        // ==================== قارة أفريقيا (54 دولة) ====================
+        { continent: "أفريقيا", country: "مصر", capital: "القاهرة", description: "مدينة الأهرامات والنيل." },
+        { continent: "أفريقيا", country: "الجزائر", capital: "الجزائر العاصمة", description: "عاصمة التاريخ والثورة." },
+        { continent: "أفريقيا", country: "المغرب", capital: "الرباط", description: "مدينة الحدائق والتاريخ." },
+        { continent: "أفريقيا", country: "تونس", capital: "تونس العاصمة", description: "مهد الثورة والمدينة العتيقة." },
+        { continent: "أفريقيا", country: "ليبيا", capital: "طرابلس", description: "مدينة البحر الأبيض المتوسط." },
+        { continent: "أفريقيا", country: "السودان", capital: "الخرطوم", description: "ملتقى النيلين." },
+        { continent: "أفريقيا", country: "جنوب السودان", capital: "جوبا", description: "مدينة التنوع الثقافي." },
+        { continent: "أفريقيا", country: "الصومال", capital: "مقديشو", description: "مدينة على المحيط الهندي." },
+        { continent: "أفريقيا", country: "إثيوبيا", capital: "أديس أبابا", description: "عاصمة الاتحاد الأفريقي." },
+        { continent: "أفريقيا", country: "كينيا", capital: "نيروبي", description: "بوابة السفاري الأفريقي." },
+        { continent: "أفريقيا", country: "نيجيريا", capital: "أبوجا", description: "موطن التنوع الثقافي الأفريقي." },
+        { continent: "أفريقيا", country: "غانا", capital: "أكرا", description: "مدينة الشواطئ الذهبية." },
+        { continent: "أفريقيا", country: "أنغولا", capital: "لواندا", description: "مدينة النفط والموانئ." },
+        { continent: "أفريقيا", country: "الكاميرون", capital: "ياوندي", description: "مدينة الغابات المطيرة." },
+        { continent: "أفريقيا", country: "السنغال", capital: "داكار", description: "بوابة أفريقيا الغربية." },
+        { continent: "أفريقيا", country: "مالي", capital: "باماكو", description: "عاصمة الموسيقى الأفريقية." },
+        { continent: "أفريقيا", country: "تشاد", capital: "انجمينا", description: "قلب الصحراء الكبرى." },
+        { continent: "أفريقيا", country: "النيجر", capital: "نيامي", description: "مدينة النهر والصحراء." },
+        { continent: "أفريقيا", country: "زامبيا", capital: "لوساكا", description: "أرض شلالات فيكتوريا." },
+        { continent: "أفريقيا", country: "زيمبابوي", capital: "هراري", description: "مدينة السهول الذهبية." },
+        { continent: "أفريقيا", country: "أوغندا", capital: "كمبالا", description: "مدينة البحيرات." },
+        { continent: "أفريقيا", country: "رواندا", capital: "كيغالي", description: "مدينة الألف تلة." },
+        { continent: "أفريقيا", country: "بوروندي", capital: "بوجومبورا", description: "عاصمة البحيرات العظمى." },
+        { continent: "أفريقيا", country: "جيبوتي", capital: "جيبوتي", description: "بوابة البحر الأحمر." },
+        { continent: "أفريقيا", country: "إريتريا", capital: "أسمرة", description: "مدينة العمارة الإيطالية." },
+        { continent: "أفريقيا", country: "تنزانيا", capital: "دودوما", description: "موطن جبل كليمنجارو." },
+        { continent: "أفريقيا", country: "بوتسوانا", capital: "غابورون", description: "عاصمة السافانا البرية." },
+        { continent: "أفريقيا", country: "ناميبيا", capital: "ويندهوك", description: "أرض الكثبان الرملية." },
+        { continent: "أفريقيا", country: "موزمبيق", capital: "مابوتو", description: "مدينة الشواطئ البكر." },
+        { continent: "أفريقيا", country: "مالاوي", capital: "ليلونغوي", description: "أرض البحيرات الجميلة." },
+        { continent: "أفريقيا", country: "ليسوتو", capital: "ماسيرو", description: "مملكة في السماء." },
+        { continent: "أفريقيا", country: "إسواتيني", capital: "مبابان", description: "أصغر مملكة في أفريقيا." },
+        { continent: "أفريقيا", country: "غينيا", capital: "كوناكري", description: "مدينة الغابات المطيرة." },
+        { continent: "أفريقيا", country: "غينيا بيساو", capital: "بيساو", description: "مدينة الجزر الجميلة." },
+        { continent: "أفريقيا", country: "غينيا الاستوائية", capital: "مالابو", description: "عاصمة على جزيرة." },
+        { continent: "أفريقيا", country: "ليبيريا", capital: "مونروفيا", description: "مهد التحرر الأفريقي." },
+        { continent: "أفريقيا", country: "سيراليون", capital: "فريتاون", description: "عاصمة السلام." },
+        { continent: "أفريقيا", country: "كوت ديفوار", capital: "ياموسوكرو", description: "مدينة الكاكاو." },
+        { continent: "أفريقيا", country: "بوركينا فاسو", capital: "واغادوغو", description: "عاصمة الثقافات الشعبية." },
+        { continent: "أفريقيا", country: "توغو", capital: "لومي", description: "مدينة التوابل الأفريقية." },
+        { continent: "أفريقيا", country: "بنين", capital: "بورتو نوفو", description: "مدينة الملوك." },
+        { continent: "أفريقيا", country: "الغابون", capital: "ليبرفيل", description: "مدينة الغابات المطيرة." },
+        { continent: "أفريقيا", country: "الكونغو (جمهورية الكونغو)", capital: "برازافيل", description: "مدينة الضفتين." },
+        { continent: "أفريقيا", country: "الكونغو الديمقراطية", capital: "كينشاسا", description: "عاصمة النهر العظيم." },
+        { continent: "أفريقيا", country: "جزر القمر", capital: "موروني", description: "جزيرة البركان." },
+        { continent: "أفريقيا", country: "مدغشقر", capital: "أنتاناناريفو", description: "أرض الليمور." },
+        { continent: "أفريقيا", country: "سيشيل", capital: "فيكتوريا", description: "عاصمة الجزر الاستوائية." },
+        { continent: "أفريقيا", country: "كاب فيردي (الرأس الأخضر)", capital: "برايا", description: "مدينة المحيط الأطلسي." },
+        { continent: "أفريقيا", country: "موريتانيا", capital: "نواكشوط", description: "عاصمة الصحراء." },
+        { continent: "أفريقيا", country: "ساو تومي وبرينسيب", capital: "ساو تومي", description: "جزر في قلب الأطلسي." },
+        { continent: "أفريقيا", country: "إفريقيا الوسطى", capital: "بانغي", description: "مدينة وسط القارة." },
+        { continent: "أفريقيا", country: "موريشيوس", capital: "بورت لويس", description: "مدينة الشعاب المرجانية." },
+        { continent: "أفريقيا", country: "مالاوي", capital: "ليلونغوي", description: "أرض البحيرات الجميلة." }, // متكررة في القائمة الأصلية
+        { continent: "أفريقيا", country: "جنوب السودان", capital: "جوبا", description: "عاصمة جديدة واعدة." }, // متكررة أيضاً
+
+        // ==================== قارة آسيا (49 دولة) ====================
+        { continent: "آسيا", country: "الصين", capital: "بكين", description: "موطن سور الصين العظيم." },
+        { continent: "آسيا", country: "اليابان", capital: "طوكيو", description: "عاصمة التكنولوجيا الحديثة." },
+        { continent: "آسيا", country: "الهند", capital: "نيودلهي", description: "أرض الثقافة والتقاليد." },
+        { continent: "آسيا", country: "كوريا الجنوبية", capital: "سيول", description: "مدينة التكنولوجيا والترفيه." },
+        { continent: "آسيا", country: "كوريا الشمالية", capital: "بيونغ يانغ", description: "عاصمة النظام المغلق." },
+        { continent: "آسيا", country: "إندونيسيا", capital: "جاكرتا", description: "مدينة الأرخبيل الكبرى." },
+        { continent: "آسيا", country: "ماليزيا", capital: "كوالالمبور", description: "موطن برجي بتروناس التوأمين." },
+        { continent: "آسيا", country: "الفلبين", capital: "مانيلا", description: "أرض الجزر والشواطئ." },
+        { continent: "آسيا", country: "تايلاند", capital: "بانكوك", description: "مدينة المعابد والأنهار." },
+        { continent: "آسيا", country: "فيتنام", capital: "هانوي", description: "مدينة التاريخ والأسواق العائمة." },
+        { continent: "آسيا", country: "ميانمار", capital: "نايبيداو", description: "مدينة السلام والحدائق." },
+        { continent: "آسيا", country: "كمبوديا", capital: "بنوم بنه", description: "أرض المعابد العريقة." },
+        { continent: "آسيا", country: "لاوس", capital: "فيينتيان", description: "مدينة الهدوء والطبيعة." },
+        { continent: "آسيا", country: "سنغافورة", capital: "سنغافورة", description: "مدينة الحدائق المتطورة." },
+        { continent: "آسيا", country: "بروناي", capital: "بندر سري بكاوان", description: "موطن القصور الملكية." },
+        { continent: "آسيا", country: "بوتان", capital: "ثيمفو", description: "أرض السعادة الوطنية." },
+        { continent: "آسيا", country: "نيبال", capital: "كاتماندو", description: "موطن جبل إيفرست." },
+        { continent: "آسيا", country: "سريلانكا", capital: "كولومبو", description: "جزيرة الشاي والتوابل." },
+        { continent: "آسيا", country: "باكستان", capital: "إسلام أباد", description: "مدينة السلام والمباني الحديثة." },
+        { continent: "آسيا", country: "أفغانستان", capital: "كابول", description: "أرض التاريخ والثقافات." },
+        { continent: "آسيا", country: "إيران", capital: "طهران", description: "موطن الحضارة الفارسية." },
+        { continent: "آسيا", country: "تركيا", capital: "أنقرة", description: "ملتقى الشرق والغرب." },
+        { continent: "آسيا", country: "السعودية", capital: "الرياض", description: "عاصمة النفط والتطور." },
+        { continent: "آسيا", country: "الإمارات", capital: "أبو ظبي", description: "مدينة الأبراج والتقدم." },
+        { continent: "آسيا", country: "قطر", capital: "الدوحة", description: "عاصمة كأس العالم 2022." },
+        { continent: "آسيا", country: "الكويت", capital: "الكويت", description: "مدينة الأبراج والأسواق." },
+        { continent: "آسيا", country: "البحرين", capital: "المنامة", description: "جزيرة اللؤلؤ." },
+        { continent: "آسيا", country: "عمان", capital: "مسقط", description: "مدينة الجبال والشواطئ." },
+        { continent: "آسيا", country: "اليمن", capital: "صنعاء", description: "مدينة التاريخ والأسواق القديمة." },
+        { continent: "آسيا", country: "الأردن", capital: "عمّان", description: "مدينة البتراء وعاصمة الضيافة." },
+        { continent: "آسيا", country: "لبنان", capital: "بيروت", description: "باريس الشرق الأوسط." },
+        { continent: "آسيا", country: "سوريا", capital: "دمشق", description: "أقدم عاصمة في التاريخ." },
+        { continent: "آسيا", country: "العراق", capital: "بغداد", description: "مدينة الحضارات القديمة." },
+        { continent: "آسيا", country: "فلسطين", capital: "القدس", description: "مدينة السلام والأديان." },
+        { continent: "آسيا", country: "أوزبكستان", capital: "طشقند", description: "مدينة طريق الحرير." },
+        { continent: "آسيا", country: "كازاخستان", capital: "أستانا (نور سلطان)", description: "عاصمة المستقبل المعماري." },
+        { continent: "آسيا", country: "تركمانستان", capital: "عشق أباد", description: "مدينة الرخام الأبيض." },
+        { continent: "آسيا", country: "قيرغيزستان", capital: "بشكيك", description: "موطن الطبيعة الجبلية." },
+        { continent: "آسيا", country: "طاجيكستان", capital: "دوشنبه", description: "مدينة الجبال والثقافات." },
+        { continent: "آسيا", country: "أذربيجان", capital: "باكو", description: "مدينة النار والحداثة." },
+        { continent: "آسيا", country: "أرمينيا", capital: "يريفان", description: "عاصمة الكنائس القديمة." },
+        { continent: "آسيا", country: "جورجيا", capital: "تبليسي", description: "مدينة التاريخ والجبال." },
+        { continent: "آسيا", country: "مالديف", capital: "ماليه", description: "جزر الجمال والطبيعة." },
+        { continent: "آسيا", country: "قبرص", capital: "نيقوسيا", description: "جزيرة الثقافتين." },
+        { continent: "آسيا", country: "منغوليا", capital: "أولان باتور", description: "موطن الخيام الرحّالة." },
+        { continent: "آسيا", country: "بنغلاديش", capital: "دكا", description: "مدينة الأنهار والزراعة." },
+        { continent: "آسيا", country: "تيمور الشرقية", capital: "ديلي", description: "جزيرة التنوع الثقافي." },
+        { continent: "آسيا", country: "روسيا", capital: "موسكو", description: "عاصمة الكرملين والأمجاد." },
+
+        // ==================== قارة أوروبا (44 دولة) ====================
+        { continent: "أوروبا", country: "فرنسا", capital: "باريس", description: "مدينة الحب وبرج إيفل." },
+        { continent: "أوروبا", country: "ألمانيا", capital: "برلين", description: "مدينة الجدار والتاريخ." },
+        { continent: "أوروبا", country: "المملكة المتحدة", capital: "لندن", description: "موطن ساعة بيغ بن." },
+        { continent: "أوروبا", country: "إيطاليا", capital: "روما", description: "مهد الحضارة الرومانية والفاتيكان." },
+        { continent: "أوروبا", country: "إسبانيا", capital: "مدريد", description: "مدينة الفن والملاعب." },
+        { continent: "أوروبا", country: "البرتغال", capital: "لشبونة", description: "مدينة الاكتشافات البحرية." },
+        { continent: "أوروبا", country: "سويسرا", capital: "برن", description: "موطن الجبال والشوكولاتة." },
+        { continent: "أوروبا", country: "النمسا", capital: "فيينا", description: "مدينة الموسيقى الكلاسيكية." },
+        { continent: "أوروبا", country: "اليونان", capital: "أثينا", description: "مهد الحضارة الغربية." },
+        { continent: "أوروبا", country: "هولندا", capital: "أمستردام", description: "مدينة القنوات وحقول الزهور." },
+        { continent: "أوروبا", country: "بلجيكا", capital: "بروكسل", description: "عاصمة الاتحاد الأوروبي." },
+        { continent: "أوروبا", country: "لوكسمبورغ", capital: "لوكسمبورغ", description: "مدينة القلاع والأسواق." },
+        { continent: "أوروبا", country: "إيرلندا", capital: "دبلن", description: "جزيرة الموسيقى والحدائق." },
+        { continent: "أوروبا", country: "السويد", capital: "ستوكهولم", description: "مدينة الجزر والتكنولوجيا." },
+        { continent: "أوروبا", country: "النرويج", capital: "أوسلو", description: "أرض الفايكنغ والطبيعة." },
+        { continent: "أوروبا", country: "الدنمارك", capital: "كوبنهاغن", description: "مدينة حكاية عروس البحر." },
+        { continent: "أوروبا", country: "فنلندا", capital: "هلسنكي", description: "أرض الطبيعة والمناخ البارد." },
+        { continent: "أوروبا", country: "آيسلندا", capital: "ريكيافيك", description: "أرض البراكين والجليد." },
+        { continent: "أوروبا", country: "بولندا", capital: "وارسو", description: "مدينة النضال والتاريخ." },
+        { continent: "أوروبا", country: "التشيك", capital: "براغ", description: "مدينة الجسور والقصور." },
+        { continent: "أوروبا", country: "المجر", capital: "بودابست", description: "مدينة الدانوب الجميلة." },
+        { continent: "أوروبا", country: "رومانيا", capital: "بوخارست", description: "موطن دراكولا والطبيعة." },
+        { continent: "أوروبا", country: "بلغاريا", capital: "صوفيا", description: "مدينة الثقافة القديمة." },
+        { continent: "أوروبا", country: "صربيا", capital: "بلغراد", description: "مدينة التقاء النهرين." },
+        { continent: "أوروبا", country: "كرواتيا", capital: "زغرب", description: "أرض السواحل والجزر." },
+        { continent: "أوروبا", country: "سلوفينيا", capital: "ليوبليانا", description: "مدينة الجبال والأساطير." },
+        { continent: "أوروبا", country: "البوسنة والهرسك", capital: "سراييفو", description: "عاصمة التنوع الثقافي." },
+        { continent: "أوروبا", country: "الجبل الأسود", capital: "بودغوريتسا", description: "مدينة الطبيعة الهادئة." },
+        { continent: "أوروبا", country: "مقدونيا الشمالية", capital: "سكوبي", description: "مدينة التلال والمواقع التاريخية." },
+        { continent: "أوروبا", country: "ألبانيا", capital: "تيرانا", description: "أرض الضيافة والطبيعة." },
+        { continent: "أوروبا", country: "ليتوانيا", capital: "فيلنيوس", description: "مدينة الكنائس القديمة." },
+        { continent: "أوروبا", country: "لاتفيا", capital: "ريغا", description: "مدينة العمارة الجميلة." },
+        { continent: "أوروبا", country: "إستونيا", capital: "تالين", description: "مدينة التكنولوجيا والتراث." },
+        { continent: "أوروبا", country: "روسيا", capital: "موسكو", description: "عاصمة الكرملين والأمجاد." },
+        { continent: "أوروبا", country: "أوكرانيا", capital: "كييف", description: "مدينة التاريخ والأنهار." },
+        { continent: "أوروبا", country: "بيلاروسيا", capital: "مينسك", description: "مدينة الحدائق الخضراء." },
+        { continent: "أوروبا", country: "مولدوفا", capital: "كيشيناو", description: "أرض النبيذ والطبيعة." },
+        { continent: "أوروبا", country: "جورجيا", capital: "تبليسي", description: "بوابة القوقاز." },
+        { continent: "أوروبا", country: "أرمينيا", capital: "يريفان", description: "مدينة التاريخ والجبال." },
+        { continent: "أوروبا", country: "أذربيجان", capital: "باكو", description: "مدينة النار والطاقة." },
+        { continent: "أوروبا", country: "مالطا", capital: "فاليتا", description: "مدينة التاريخ والجزر." },
+        { continent: "أوروبا", country: "قبرص", capital: "نيقوسيا", description: "مدينة الثقافتين." },
+        { continent: "أوروبا", country: "سان مارينو", capital: "سان مارينو", description: "واحدة من أصغر دول العالم." },
+        { continent: "أوروبا", country: "الفاتيكان", capital: "مدينة الفاتيكان", description: "مقر الكنيسة الكاثوليكية." },
+
+        // ==================== قارة أمريكا الشمالية (23 دولة) ====================
+        { continent: "أمريكا الشمالية", country: "الولايات المتحدة", capital: "واشنطن العاصمة", description: "أرض الحرية والفرص." },
+        { continent: "أمريكا الشمالية", country: "كندا", capital: "أوتاوا", description: "مدينة الطبيعة والمساحات الشاسعة." },
+        { continent: "أمريكا الشمالية", country: "المكسيك", capital: "مكسيكو سيتي", description: "مدينة الأزتك والتاكو." },
+        { continent: "أمريكا الشمالية", country: "غواتيمالا", capital: "غواتيمالا", description: "أرض المايا القديمة." },
+        { continent: "أمريكا الشمالية", country: "هندوراس", capital: "تيغوسيغالبا", description: "مدينة الجبال." },
+        { continent: "أمريكا الشمالية", country: "السلفادور", capital: "سان سلفادور", description: "مدينة البركان والمحيط." },
+        { continent: "أمريكا الشمالية", country: "نيكاراغوا", capital: "ماناغوا", description: "أرض البحيرات والبراكين." },
+        { continent: "أمريكا الشمالية", country: "كوستاريكا", capital: "سان خوسيه", description: "مدينة الطبيعة والابتسامات." },
+        { continent: "أمريكا الشمالية", country: "بنما", capital: "بنما سيتي", description: "مدينة القناة الشهيرة." },
+        { continent: "أمريكا الشمالية", country: "كوبا", capital: "هافانا", description: "مدينة السالسا والسيجار." },
+        { continent: "أمريكا الشمالية", country: "جمهورية الدومينيكان", capital: "سانتو دومينغو", description: "أول مدينة في العالم الجديد." },
+        { continent: "أمريكا الشمالية", country: "هايتي", capital: "بورت أو برانس", description: "أرض الجبال والشواطئ." },
+        { continent: "أمريكا الشمالية", country: "جامايكا", capital: "كينغستون", description: "موطن الريغي والموسيقى." },
+        { continent: "أمريكا الشمالية", country: "بليز", capital: "بلموبان", description: "مدينة الشواطئ الجميلة." },
+        { continent: "أمريكا الشمالية", country: "باربادوس", capital: "بريدج تاون", description: "أرض الرمال البيضاء." },
+        { continent: "أمريكا الشمالية", country: "سانت لوسيا", capital: "كاستريس", description: "جزيرة الحب." },
+        { continent: "أمريكا الشمالية", country: "غرينادا", capital: "سانت جورج", description: "أرض التوابل." },
+        { continent: "أمريكا الشمالية", country: "سانت فينسنت والغرينادين", capital: "كينغستاون", description: "جزر السحر الطبيعي." },
+        { continent: "أمريكا الشمالية", country: "أنتيغوا وبربودا", capital: "سانت جونز", description: "أرض الشواطئ الذهبية." },
+        { continent: "أمريكا الشمالية", country: "دومينيكا", capital: "روسو", description: "جزيرة الطبيعة." },
+        { continent: "أمريكا الشمالية", country: "ترينيداد وتوباغو", capital: "بورت أوف سبين", description: "مدينة الكرنفال والموسيقى." },
+        { continent: "أمريكا الشمالية", country: "سانت كيتس ونيفيس", capital: "باسيتير", description: "جزر السحر الاستوائي." },
+        { continent: "أمريكا الشمالية", country: "باهاماس", capital: "ناساو", description: "أرض المنتجعات والشعاب المرجانية." },
+
+        // ==================== قارة أمريكا الجنوبية (12 دولة) ====================
+        { continent: "أمريكا الجنوبية", country: "البرازيل", capital: "برازيليا", description: "مدينة الكرنفال والسامبا." },
+        { continent: "أمريكا الجنوبية", country: "الأرجنتين", capital: "بوينس آيرس", description: "مدينة التانغو." },
+        { continent: "أمريكا الجنوبية", country: "تشيلي", capital: "سانتياغو", description: "مدينة الطبيعة الساحرة." },
+        { continent: "أمريكا الجنوبية", country: "بيرو", capital: "ليما", description: "موطن الماتشو بيتشو." },
+        { continent: "أمريكا الجنوبية", country: "كولومبيا", capital: "بوغوتا", description: "مدينة القهوة." },
+        { continent: "أمريكا الجنوبية", country: "فنزويلا", capital: "كاراكاس", description: "مدينة النفط والشواطئ." },
+        { continent: "أمريكا الجنوبية", country: "الإكوادور", capital: "كيتو", description: "مدينة خط الاستواء." },
+        { continent: "أمريكا الجنوبية", country: "بوليفيا", capital: "سوكره", description: "مدينة المرتفعات." },
+        { continent: "أمريكا الجنوبية", country: "الأوروغواي", capital: "مونتيفيديو", description: "مدينة الهدوء والشواطئ." },
+        { continent: "أمريكا الجنوبية", country: "باراغواي", capital: "أسونسيون", description: "أرض النهر الكبير." },
+        { continent: "أمريكا الجنوبية", country: "غيانا", capital: "جورج تاون", description: "أرض الغابات المطيرة." },
+        { continent: "أمريكا الجنوبية", country: "سورينام", capital: "باراماريبو", description: "مدينة التنوع الثقافي." },
+
+        // ==================== قارة أوقيانوسيا (14 دولة) ====================
+        { continent: "أوقيانوسيا", country: "أستراليا", capital: "كانبرا", description: "مدينة الكنغر والأوبرا." },
+        { continent: "أوقيانوسيا", country: "نيوزيلندا", capital: "ويلينغتون", description: "موطن الهوبيت والطبيعة." },
+        { continent: "أوقيانوسيا", country: "بابوا غينيا الجديدة", capital: "بورت مورسباي", description: "أرض التنوع القبلي." },
+        { continent: "أوقيانوسيا", country: "فيجي", capital: "سوفا", description: "جنة الجزر الاستوائية." },
+        { continent: "أوقيانوسيا", country: "جزر سليمان", capital: "هونيارا", description: "مدينة المحيط الهادئ." },
+        { continent: "أوقيانوسيا", country: "ساموا", capital: "أبيا", description: "أرض الثقافة البولينيزية." },
+        { continent: "أوقيانوسيا", country: "تونغا", capital: "نوكو ألوفا", description: "مملكة الجزر." },
+        { continent: "أوقيانوسيا", country: "كيريباتي", capital: "تاراوا", description: "جزيرة الشمس الأولى." },
+        { continent: "أوقيانوسيا", country: "جزر مارشال", capital: "ماجورو", description: "موطن الشعاب المرجانية." },
+        { continent: "أوقيانوسيا", country: "ميكرونيزيا", capital: "بالكير", description: "أرض الألف جزيرة." },
+        { continent: "أوقيانوسيا", country: "بالاو", capital: "نغيرولمود", description: "جنة الغوص." },
+        { continent: "أوقيانوسيا", country: "ناورو", capital: "يارين", description: "أصغر دولة جزيرة." },
+        { continent: "أوقيانوسيا", country: "توفالو", capital: "فونافوتي", description: "جزيرة المحيط الهادئ الصغيرة." },
+        { continent: "أوقيانوسيا", country: "فانواتو", capital: "بورت فيلا", description: "أرض البراكين والشواطئ." }
+    ];
+
+    // العناصر من الصفحة
+    const continentSelect = document.getElementById("continentSelect");
+    const countryList = document.getElementById("countryList");
+    const infoBox = document.getElementById("infoBox");
+    const countryName = document.getElementById("countryName");
+    const capitalName = document.getElementById("capitalName");
+    const description = document.getElementById("description");
+    const closeBtn = document.getElementById("closeBtn");
+
+    // دالة لإغلاق صندوق المعلومات
+    function closeInfoBox() {
+        infoBox.classList.add("hidden");
+    }
+
+    // عند تغيير القارة المختارة من القائمة المنسدلة
+    continentSelect.addEventListener("change", function() {
+        const selectedContinent = this.value;
+        // تفريغ قائمة الدول
+        countryList.innerHTML = "";
+
+        if (selectedContinent === "") {
+            // لم يتم اختيار أي قارة
+            return;
+        }
+
+        // ترشيح الدول بناء على القارة
+        const filteredCountries = countriesData.filter(item => item.continent === selectedContinent);
+
+        // إنشاء أزرار لكل دولة
+        filteredCountries.forEach(item => {
+            const btn = document.createElement("button");
+            btn.className = "country-btn";
+            btn.textContent = item.country;
+
+            // عند النقر على اسم الدولة
+            btn.addEventListener("click", () => {
+                countryName.textContent = item.country;
+                capitalName.textContent = "العاصمة: " + item.capital;
+                description.textContent = item.description;
+                infoBox.classList.remove("hidden");
+            });
+
+            countryList.appendChild(btn);
+        });
+    });
+
+    // إغلاق صندوق المعلومات عند الضغط على زر الإغلاق
+    closeBtn.addEventListener("click", closeInfoBox);
+
+    // إغلاق الصندوق عند الضغط خارجه (اختياري)
+    window.addEventListener("click", (e) => {
+        if (e.target === infoBox) {
+            closeInfoBox();
+        }
+    });
+</script>
+
+</body>
+</html>
